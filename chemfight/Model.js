@@ -25,12 +25,13 @@ CF.Model = function() {
 CF.Model.prototype.roundOver = function() {
 	//give the player a bonus based on how quick the round was over
 	//since each turn/phase we give the player AtomBucks += round * 2, give the OpponentPlayer some more AtomBucks
-	this.OpponentPlayer.AtomBucks += this.CurrentRound; 
+	this.OpponentPlayer.AtomBucks += this.CurrentTurn; 
 
 	this.MainPlayer.roundOver(this.CurrentRound);
 	this.OpponentPlayer.roundOver(this.CurrentRound);
 	
 	this.MainPlayer.Points -= this.OpponentPlayer.Points;
+	this.MainPlayer.Points += (this.CurrentRound * 1000);
 	this.OpponentPlayer.Points = 0;
 };
 

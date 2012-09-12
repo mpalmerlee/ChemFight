@@ -187,36 +187,100 @@ CF.Player.prototype.removeElementDefender = function(element) {
 	}
 };
 
+/**
+ * Round 1 AI will make purely random purchases
+ * Round 2 AI should prefer noble gasses and diversify the elements owned (so less likely to buy H if they already have H)
+ * Round 3 AI could purchase elements that would be good to use for attack or defense against the player, it could even refund some elements
+ */
 CF.Player.prototype.AIPurchaseElements = function() {
 	while(this.AtomBucks > 0) {
-		var index = this.AtomBucks + 1 < CF.GameModel.Elements.length ? this.AtomBucks + 1 : CF.GameModel.Elements.length;
-		index = CF.Util.NextRandom(0, index);
+		var index = null;
+		
+		if(CF.GameModel.CurrentRound > 1) {
+			//base purchase decisions on what we already have so we get a variety 
+			//owned elements should be less likely to be re-purchased
+			var unownedAffordableElements = [];
+			for(var i = 0; i < CF.GameModel.Elements.length; i++) {
+				var element = CF.GameModel.Elements[i];
+				if(this.AtomBucks >= element.n && this.getOwnedElementCount(element) == 0) {
+					unownedAffordableElements.push(element);
+				}
+			}
+			if(unownedAffordableElements.length > 0) {
+				var i = CF.Util.NextRandom(0, unownedAffordableElements.length);
+				index = unownedAffordableElements[i].n - 1;
+			}
+		} 
+		if(!index) {//just pick one at random to purchase
+			index = this.AtomBucks + 1 < CF.GameModel.Elements.length ? this.AtomBucks + 1 : CF.GameModel.Elements.length;
+			index = CF.Util.NextRandom(0, index);
+		}
 		var element = CF.GameModel.Elements[index];
 		this.purchaseElement(element);
 	}
 };
 
+/**
+ * AI prefers to attack with noble gasses if it has any 
+ *  round 2 opponent should prefer heavier elements and a variety elements that are less reactive (middle of the periodic table)
+ *  round 3 opponent should try to pick elements that are not easily defendable by the player (based on what he/she owns)?
+ */
 CF.Player.prototype.AIPickAttackingElement = function() {
+	this.AttackingElement = null;
+	
 	//first check for Noble gasses, might as well use those to attack first
-	for(var e in this.OwnedElementCounts) {
-		if(this.OwnedElementCounts[e].g == 18) {
-			this.AttackingElement = this.OwnedElementCounts[e];
+	for(var i = CF.GameModel.Elements.length-1; i >= 0; i--) {
+		var element = CF.GameModel.Elements[i];
+		if(element.g == 18 && element.n in this.OwnedElementCounts && this.OwnedElementCounts[element.n] > 0){
+			this.AttackingElement = element;
+			break;
 		}
 	}
-	//just pick one at random for now
-	var ownedElements = this.getAllOwnedElements();
-	if(ownedElements.length == 0)
-		this.AttackingElement = null;
-	else {
-		var index = CF.Util.NextRandom(0, ownedElements.length);
-		this.AttackingElement = ownedElements[index];
-		this.removeOwnedElement(this.AttackingElement);
+	
+	if(!this.AttackingElement && CF.GameModel.CurrentRound > 1) {
+		//Prefer to attack with element groups 2 through 16 and the heaviest elements in those groups (those are probably the harder ones to defend against)
+		var bestElementsForAttack = [];
+		for(var i = CF.GameModel.Elements.length-1; i >= 0; i--) {
+			var element = CF.GameModel.Elements[i];
+			if(element.g > 1 && element.g < 17){
+				bestElementsForAttack.push(element);
+			}
+		}
+		
+		if(bestElementsForAttack.length > 0) {
+			//prefer the elements in the list closer to index 0 (those will be the heaviest)
+			var probabilitySum = 0;
+			for(var i = 0; i < bestElementsForAttack.length; i++) {
+				probabilitySum += Math.pow(2, i);
+			}
+			for(var i = 0; i < bestElementsForAttack.length; i++) {
+				var slotProbability = Math.pow(2, bestElementsForAttack.length - i - 1);
+				if(CF.Util.NextRandom(0, probabilitySum + 1) <= slotProbability) {
+					this.AttackingElement = bestElementsForAttack[i];
+					break;
+				}
+			}
+		}
 	}
+	
+	if(!this.AttackingElement) {
+		//just pick one at random if we got here
+		var ownedElements = this.getAllOwnedElements();
+		if(ownedElements.length == 0)
+			this.AttackingElement = null;
+		else {
+			var index = CF.Util.NextRandom(0, ownedElements.length);
+			this.AttackingElement = ownedElements[index];
+		}
+	}
+	
+	if(this.AttackingElement)
+		this.removeOwnedElement(this.AttackingElement);
 	
 	return this.AttackingElement;
 };
 
-/*
+/**
  * Add more smarts to round 2 and 3 computers picking defending elements, 
  * maybe round 2 chooses smallest possible configuration and 
  * round 3 bases possible defenders based on estimations of players owned compounds and valence electrons and known compounds
