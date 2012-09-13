@@ -5,45 +5,25 @@
 <title>Chem Fight - Chemistry Battle Game</title>
 <script type="text/javascript" src="js/Stratiscape-prod.js"></script>
 <script type="text/javascript" src="js/audio-interface.js"></script>
-<!--
-<script type="text/javascript" src="chemfight/Globals.js"></script>
-<script type="text/javascript" src="chemfight/Util.js"></script>
-<script type="text/javascript" src="chemfight/Model.js"></script>
-<script type="text/javascript" src="chemfight/View.js"></script>
-<script type="text/javascript" src="chemfight/Controller.js"></script>
-<script type="text/javascript" src="chemfight/Player.js"></script>
--->
 <script type="text/javascript" src="cf.js"></script>
-
 <style type="text/css">
-	body {
-		font: 12px 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;
-		color: #FE0;
-		background-color: #000;
-	}
-	#knownCompoundList ul {
-		list-style: none;
-		margin-left: 0;
-		padding-left: 1em;
-		text-indent: -1em;
-	}
-	#knownCompoundList ul li:before {
-		content: "\00BB \0020";
-	}
-</style>
-
-<script type="text/javascript">
-
-function SetupCF() {
-
-	window.name = "chemfight-home";
-	
-	SetupChemFight();
-	
-	//document.getElementById("debug").value = JSON.stringify(CF.GameModel.Elements);
+body {
+	font: 12px 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;
+	color: #FE0;
+	background-color: #000;
 }
-
-
+#knownCompoundList ul {
+	list-style: none;
+	margin-left: 0;
+	padding-left: 1em;
+	text-indent: -1em;
+}
+#knownCompoundList ul li:before {
+	content: "\00BB \0020";
+}
+</style>
+<script type="text/javascript">
+function SetupCF() {window.name = "chemfight-home";SetupChemFight();}
 </script>
 </head>
 <body onload="SetupCF();">
@@ -73,7 +53,6 @@ function SetupCF() {
 		</div>
 	</td>
 	</tr>
-	
 	<tr>
 	<td colspan="2">
 	<p>
@@ -87,11 +66,7 @@ function SetupCF() {
 	<p style="color:#FFF;text-align:center">
 	Chem Fight was created by <a href="http://mattpalmerlee.com/">Matt Palmerlee</a> of <a href="http://masteredsoftware.com/">Mastered Software</a> for the <a href="http://js13kgames.com/">js13KGames</a>
 competition.</p>
-	<!--
-		<textarea id="debug" rows="50" cols="100"></textarea>
-	-->
 	</td>
 	</tr>
-	
 </table>
 </body>

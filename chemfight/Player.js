@@ -171,7 +171,7 @@ CF.Player.prototype.getDefendingElementCount = function(n) {
 };
 
 CF.Player.prototype.addElementDefender = function(element) {
-	if(this.getOwnedElementCount(element.n) == 0)//make sure the player owns at least one
+	if(this.getOwnedElementCount(element.n) == 0 || element.g == 18)//make sure the player owns at least one
 		return false;
 	if(!(element.n in this.DefendingElementCounts)) {
 		this.DefendingElementCounts[element.n] = 0;

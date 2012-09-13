@@ -46,6 +46,8 @@ CF.View.Setup = function() {
 		
 		CF.View.ContextBackground.globalAlpha = 1.0;
 		
+		CF.View.CanvasBackgroundLayer.addChild(new CF.View.Border());
+		
 		setInterval(function() { CF.View.StratiscapeDraw.draw() }, 1000/60);
 		
 		CF.View.SetupNewGame();
@@ -479,7 +481,7 @@ CF.View.HUD = Stratiscape.DrawnObject.extend({ //HUD drawn object class
 				ctx.fillStyle = '#FE0';
 				ctx.font = "12px" + CF.View.DefaultFont;
 				textStartY += 14;
-				ctx.fillText("Your current Atom Bucks are shown below", textStartX, textStartY);
+				ctx.fillText("Your current Atom Bucks are on the bottom", textStartX, textStartY);
 				textStartY += 14;
 				ctx.fillText("1 Atom Buck = 1 Proton (Atomic Number)", textStartX, textStartY);
 				textStartY += 14;
@@ -507,7 +509,7 @@ CF.View.HUD = Stratiscape.DrawnObject.extend({ //HUD drawn object class
 				textStartY += 14;
 				ctx.fillText("it is considered a successful attack", textStartX, textStartY);
 				textStartY += 14;
-				ctx.fillText("and the enemy looses life.", textStartX, textStartY);
+				ctx.fillText("and the enemy loses life.", textStartX, textStartY);
 				textStartY += 14;
 				ctx.fillStyle = '#00F';
 				ctx.fillText("Noble gases cannot be defended against.", textStartX, textStartY);
@@ -749,49 +751,72 @@ CF.View.HUD = Stratiscape.DrawnObject.extend({ //HUD drawn object class
 });
 
 /**
+ * Border is kinda silly, but it works within stratiscape's drawn object model, probably in the future stratiscape should allow a 'dirty callback' so a layer could easily draw things like a simple border
+ * @constructor
+ */
+CF.View.Border = Stratiscape.DrawnObject.extend({ //ElectronShellBox drawn object class
+	/**
+	 * draws the Border to the canvas
+	 * @this {CF.View.Border}
+	 */
+	draw: function(ctx) {
+		/*
+		ctx.shadowOffsetX = 1;
+		ctx.shadowOffsetY = 1;
+		ctx.shadowBlur    = 1;
+		ctx.shadowColor   = 'rgba(0, 50, 0, 255)';
+		*/
+		ctx.lineWidth   = 1;
+		ctx.strokeStyle = '#FE0';
+		ctx.strokeRect(2, 2, CF.View.CanvasBackgroundWidth-4, CF.View.CanvasBackgroundHeight-4);
+		ctx.strokeStyle = '#F90';
+		ctx.strokeRect(0, 0, CF.View.CanvasBackgroundWidth, CF.View.CanvasBackgroundHeight);
+	}
+});
+/**
  * ElectronShellBox is a representation of 1 box that will hold two electrons with opposite spins
  * @constructor
  */
-CF.View.ElectronShellBox = Stratiscape.DrawnObject.extend({ //ElectronShellBox drawn object class
-	
-	/**
-	 * initializes this ElectronShellBox
-	 * @this {CF.View.ElectronShellBox}
-	 */
-	init: function(x, y, eCount) {
-		this.s = 20;//box size
-		this.x = x;
-		this.y = y;
-		this.eCount = eCount;//0, 1 or 2
-	},
-	
-	/**
-	 * draws the ElectronShellBox to the canvas
-	 * @this {CF.View.ElectronShellBox}
-	 */
-	draw: function(ctx) {
-		ctx.strokeStyle = '#008000';
-		ctx.strokeRect(this.x, this.y, this.s, this.s);
-		
-		if(this.eCount > 0) {
-			ctx.lineWidth = 2;
-
-			ctx.beginPath();
-			ctx.moveTo(this.x + 6, this.y + 2);
-			ctx.lineTo(this.x + 6, this.y + 17);
-			ctx.lineTo(this.x + 10, this.y + 13);
-
-			if(this.eCount > 1) {
-				ctx.moveTo(this.x + 14, this.y + 2);
-				ctx.lineTo(this.x + 14, this.y + 17);
-				ctx.lineTo(this.x + 18, this.y + 13);
-			}
-			ctx.stroke();
-			ctx.closePath();
-		}
-	}
-	
-});
+//CF.View.ElectronShellBox = Stratiscape.DrawnObject.extend({ //ElectronShellBox drawn object class
+//	
+//	/**
+//	 * initializes this ElectronShellBox
+//	 * @this {CF.View.ElectronShellBox}
+//	 */
+//	init: function(x, y, eCount) {
+//		this.s = 20;//box size
+//		this.x = x;
+//		this.y = y;
+//		this.eCount = eCount;//0, 1 or 2
+//	},
+//	
+//	/**
+//	 * draws the ElectronShellBox to the canvas
+//	 * @this {CF.View.ElectronShellBox}
+//	 */
+//	draw: function(ctx) {
+//		ctx.strokeStyle = '#008000';
+//		ctx.strokeRect(this.x, this.y, this.s, this.s);
+//		
+//		if(this.eCount > 0) {
+//			ctx.lineWidth = 2;
+//
+//			ctx.beginPath();
+//			ctx.moveTo(this.x + 6, this.y + 2);
+//			ctx.lineTo(this.x + 6, this.y + 17);
+//			ctx.lineTo(this.x + 10, this.y + 13);
+//
+//			if(this.eCount > 1) {
+//				ctx.moveTo(this.x + 14, this.y + 2);
+//				ctx.lineTo(this.x + 14, this.y + 17);
+//				ctx.lineTo(this.x + 18, this.y + 13);
+//			}
+//			ctx.stroke();
+//			ctx.closePath();
+//		}
+//	}
+//	
+//});
 
 
 /**
@@ -909,7 +934,7 @@ CF.View.ElementCard = Stratiscape.DrawnObject.extend({ //ElementCard drawn objec
 			for(var i in electronShells) {
 				electronCount += electronShells[i];
 				var text = electronShells[i]
-				if(this.e.n < electronCount) {
+				if(this.e.n <= electronCount) {
 					text = this.e.n - lastElectronCount + "";
 					done = true;
 				}
