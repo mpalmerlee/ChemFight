@@ -48,3 +48,7 @@ Dynamic Periodic Table http://www.ptable.com/
 Electron Shell http://en.wikipedia.org/wiki/Electron_shell
 
 Electron Configuration http://en.wikipedia.org/wiki/Electron_configuration
+
+License 
+=======
+MIT Licensed
