@@ -49,6 +49,8 @@ Electron Shell http://en.wikipedia.org/wiki/Electron_shell
 
 Electron Configuration http://en.wikipedia.org/wiki/Electron_configuration
 
+Common Chemical Compounds http://en.wikipedia.org/wiki/Dictionary_of_chemical_formulas
+
 License 
 =======
 MIT Licensed
